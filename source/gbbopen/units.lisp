@@ -14,7 +14,7 @@
 ;;;
 ;;; Written by: Dan Corkill
 ;;;
-;;; Copyright (C) 2002-2012, Dan Corkill <corkill@GBBopen.org>
+;;; Copyright (C) 2002-2016, Dan Corkill <corkill@GBBopen.org>
 ;;; Part of the GBBopen Project.
 ;;; Licensed under Apache License 2.0 (see LICENSE for license information).
 ;;;
@@ -46,6 +46,8 @@
 ;;;           unit-metaclasses.lisp. (Corkill)
 ;;;  12-20-12 Tightened CLISP eq-losage workaround symbol-name test used in 
 ;;;           FIXUP-FUNCTION-VALUE-PART2. (Corkill)
+;;;  10-31-16 Quick repair of SBCL PREINFORM-COMPILER-ABOUT-CLASS-TYPE issue
+;;;           intoduced with 1.3.11.  (Corkill)
 ;;;
 ;;; * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -644,8 +646,10 @@
 	;; non-eq uninterned symbols bug (still observed in CLISP 2.45); even
 	;; so, more eq-lossage handling is required in
 	;; fixup-function-objects-part2:
-	#+clisp let #+clisp ()
-	#+sbcl
+        #+clisp let #+clisp ()
+        ;; SBCL 1.3.11 broke the following preinforming (changed to sb-kernel,
+        ;; ignore for now)
+	#+sbcl-ignored
 	(eval-when (:compile-toplevel :load-toplevel :execute)
 	  (sb-pcl::preinform-compiler-about-class-type ',unit-class-name))
 	,@(when exports
